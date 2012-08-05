@@ -2,6 +2,7 @@ require 'fileutils'
 
 
 ENABLE_JSLINT = ENV['ENABLE_JSLINT'] == 'true'
+ENABLE_CLOSURE_COMPILER = ENV['ENABLE_CLOSURE_COMPILER'] == 'true'
 
 task :default => [:debug, :build]
 
@@ -15,13 +16,13 @@ task :new, :app_name, :sdk_version do |t, args|
 end
 
 desc "Build a deployable app which includes all JavaScript and CSS resources inline"
-task :build => [:jslint] do
+task :build => [:jslint, :compile] do
   Dir.chdir(Rake.original_dir)
   Rally::AppSdk::AppTemplateBuilder.new(get_config_from_file).build_app_html
 end
 
 desc "Build a debug version of the app, useful for local development"
-task :debug do
+task :debug => [:compile] do
   Dir.chdir(Rake.original_dir)
   Rally::AppSdk::AppTemplateBuilder.new(get_config_from_file).build_app_html(true)
 end
@@ -30,6 +31,21 @@ desc "Clean all generated output"
 task :clean do
   Dir.chdir(Rake.original_dir)
   remove_files Rally::AppSdk::AppTemplateBuilder.get_auto_generated_files
+end
+
+desc "Compile .coffee to .js"
+rule ".js" => [".coffee"] do |t|
+  if ENABLE_CLOSURE_COMPILER
+    print "Compiling \"#{t.source}\" -> \"#{t.name}\" via closure-compiler\n"
+    system %{ coffee --bare --compile --print #{t.source} | closure-compiler --js - --js_output_file #{t.name} }
+  else
+    print "Compiling \"#{t.source}\" -> \"#{t.name}\"\n"
+    system %{ coffee --bare --compile #{t.source} }
+  end
+end
+
+desc "Task to ensure App.js is compiled"
+task :compile => ["App.js"] do
 end
 
 desc "Run jslint on all JavaScript files used by this app, can be enabled by setting ENABLE_JSLINT=true."
