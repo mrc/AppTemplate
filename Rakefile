@@ -75,6 +75,7 @@ module Rally
 
       CONFIG_FILE = "config.json"
       DEPLOY_DIR = 'deploy'
+      COFFEESCRIPT_FILE = "App.coffee"
       JAVASCRIPT_FILE = "App.js"
       CSS_FILE = "app.css"
       HTML = "#{DEPLOY_DIR}/App.html"
@@ -98,6 +99,7 @@ module Rally
 
         create_file_from_template CONFIG_FILE, Rally::AppTemplates::CONFIG_TPL
         create_file_from_template JAVASCRIPT_FILE, Rally::AppTemplates::JAVASCRIPT_TPL, {:escape => true}
+        create_file_from_template COFFEESCRIPT_FILE, Rally::AppTemplates::COFFEESCRIPT_TPL, {:escape => true}
         create_file_from_template CSS_FILE, Rally::AppTemplates::CSS_TPL
       end
 
@@ -382,6 +384,15 @@ Ext.define('CLASS_NAME', {
         //Write app code here
     }
 });
+    END
+
+    COFFEESCRIPT_TPL = <<-END
+Ext.define 'CustomApp',
+        extend: 'Rally.app.App'
+        componentCls: 'app'
+
+        launch: () ->
+                # Write app code here
     END
 
     JAVASCRIPT_INLINE_BLOCK_TPL = <<-END

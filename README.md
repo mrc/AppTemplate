@@ -1,3 +1,13 @@
+## This fork
+
+This fork adds coffeescript and Google closure-compiler support.
+
+`rake new` will create `App.coffee`, and `rake debug`/`rake build`
+will compile it.
+
+If `ENABLE_CLOSURE_COMPILER=true`, the closure-compiler will be
+invoked as `App.coffee` is compiled.
+
 ## Overview
 
 This Rakefile can be used to create a skeleton Rally app for use with Rally's App SDK.  You must have Ruby and the rake gem installed.
